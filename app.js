@@ -3,7 +3,7 @@ const mongoose=require("mongoose")
 const cors=require("cors")
 const bcrypt=require("bcryptjs")
 const {blogmodel}=require("./models/blog")
-
+const jwt=require("jsonwebtoken")
 
 const app=express()
 app.use(cors())
@@ -32,6 +32,37 @@ blog.save()
     res.json({status:"Success"})
 })
 
+app.post("/signin",(req,res)=>{
+   
+    let input = req.body
+    blogmodel.find({"email":req.body.email}).then( 
+        (response)=>{
+            if (response.length>0) {
+                let dbpassword=response[0].password
+                console.log(dbpassword)
+                bcrypt.compare(input.password,dbpassword,(error,isMatch)=>{
+                    if (isMatch) {
+                       
+jwt.sign({email:input.email},"blog-app",{expiresIn:"1d"},
+    (error,token)=>{
+        if (error) {
+            res.json({status:"unable to create tocken"})
+        } else {
+            res.json({status:"Success","userid":response[0]._id,"token":token})
+        }
+
+})
+
+                    } else {
+                        res.json({status:"incorect"})
+                    }
+                })
+            } else {
+                res.json({status:"not exist"})
+            }
+        }
+    ).catch()
+})
 
 app.listen(8081,()=>{
     console.log("server started")
