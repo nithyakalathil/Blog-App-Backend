@@ -64,7 +64,19 @@ jwt.sign({email:input.email},"blog-app",{expiresIn:"1d"},
     ).catch()
 })
 
-
+app.post("/view",(req,res)=>{
+    let token=req.headers["token"]
+    jwt.verify(token,"blog-app",(error,decoded)=>{
+        if(decoded)
+            {
+                blogmodel.find().then(
+                    (responce)=>{
+                        res.json(responce)
+                    }
+                )
+            }
+    })
+})
 
 app.listen(8081,()=>{
     console.log("server started")
