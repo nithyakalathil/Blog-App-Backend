@@ -64,6 +64,8 @@ jwt.sign({email:input.email},"blog-app",{expiresIn:"1d"},
     ).catch()
 })
 
+
+
 app.listen(8081,()=>{
     console.log("server started")
 }) 
